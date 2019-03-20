@@ -1,0 +1,176 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema final
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema final
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `final` DEFAULT CHARACTER SET utf8 ;
+USE `final` ;
+
+-- -----------------------------------------------------
+-- Table `final`.`categoria`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`categoria` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 21
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`cliente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`cliente` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `dataNascimento` DATE NULL DEFAULT NULL,
+  `email` VARCHAR(255) NULL DEFAULT NULL,
+  `telefone` VARCHAR(255) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 27
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`endereco`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`endereco` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `logradouro` VARCHAR(255) NOT NULL,
+  `bairro` VARCHAR(255) NOT NULL,
+  `cidade` VARCHAR(255) NOT NULL,
+  `cep` VARCHAR(9) NOT NULL,
+  `complemento` TEXT NULL DEFAULT NULL,
+  `Cliente_id` INT(11) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  INDEX `fk_Endereco_Cliente_idx` (`Cliente_id` ASC),
+  CONSTRAINT `fk_Endereco_Cliente`
+    FOREIGN KEY (`Cliente_id`)
+    REFERENCES `final`.`cliente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 27
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`entregador`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`entregador` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `telefone` VARCHAR(14) NOT NULL,
+  `cnh` VARCHAR(20) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 15
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`encomenda`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`encomenda` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `dataPedido` DATETIME NOT NULL,
+  `dataEntrega` DATETIME NOT NULL,
+  `status` INT(11) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  `Endereco_id` INT(11) NULL DEFAULT NULL,
+  `Cliente_id` INT(11) NOT NULL,
+  `entregador_id` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Encomenda_Endereco1_idx` (`Endereco_id` ASC),
+  INDEX `fk_Encomenda_Cliente1_idx` (`Cliente_id` ASC),
+  INDEX `fk_encomenda_entregador1_idx` (`entregador_id` ASC),
+  CONSTRAINT `fk_Encomenda_Cliente1`
+    FOREIGN KEY (`Cliente_id`)
+    REFERENCES `final`.`cliente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Encomenda_Endereco1`
+    FOREIGN KEY (`Endereco_id`)
+    REFERENCES `final`.`endereco` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_encomenda_entregador1`
+    FOREIGN KEY (`entregador_id`)
+    REFERENCES `final`.`entregador` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 86
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`produto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`produto` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `valor` FLOAT NOT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  `Categoria_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Produto_Categoria1_idx` (`Categoria_id` ASC),
+  CONSTRAINT `fk_Produto_Categoria1`
+    FOREIGN KEY (`Categoria_id`)
+    REFERENCES `final`.`categoria` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 26
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `final`.`encomenda_produtos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `final`.`encomenda_produtos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `quantidade` INT(11) NOT NULL,
+  `valor` FLOAT NOT NULL,
+  `Produto_id` INT(11) NOT NULL,
+  `Encomenda_id` INT(11) NOT NULL,
+  `ativo` INT(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  INDEX `fk_encomenda_produtos_Produto1_idx` (`Produto_id` ASC),
+  INDEX `fk_encomenda_produtos_encomenda1_idx` (`Encomenda_id` ASC),
+  CONSTRAINT `fk_encomenda_produtos_Produto1`
+    FOREIGN KEY (`Produto_id`)
+    REFERENCES `final`.`produto` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_encomenda_produtos_encomenda1`
+    FOREIGN KEY (`Encomenda_id`)
+    REFERENCES `final`.`encomenda` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 25
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
