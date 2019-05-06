@@ -123,8 +123,13 @@ public class EncomendaProdutoControl {
     }
 
     public Encomenda addEncomendaProduto() {
-        int id = cbEncomenda.getSelectedIndex();
-        return listaEncomenda.get(id);
+        try {
+            int id = cbEncomenda.getSelectedIndex();
+            return listaEncomenda.get(id);
+        } catch (Exception e) {
+            showJOP("Não há encomendas cadastradas");
+            return null;
+        }
     }
 
     public void listarVinculoEncomendaProduto() {
